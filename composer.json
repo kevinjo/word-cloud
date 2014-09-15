@@ -1,0 +1,29 @@
+{
+  "name":        "jleagle/word-cloud",
+  "keywords":    [
+    "word cloud",
+    "tag cloud",
+    "word",
+    "tag",
+    "cloud"
+  ],
+  "description": "Word cloud generator.",
+  "authors":     [
+    {
+      "name":     "James Eagle",
+      "email":    "jimeagle@gmail.com",
+      "homepage": "http://jimeagle.com"
+    }
+  ],
+  "autoload":    {
+    "psr-4": {
+      "Jleagle\\": "src"
+    }
+  },
+  "require":     {
+    "php":               ">=5.4.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.1.*"
+  }
+}
