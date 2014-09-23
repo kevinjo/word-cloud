@@ -5,12 +5,15 @@ class WordCloud
 {
 
   private $words = [];
-  private $range = 1;
+  private $min;
+  private $max;
 
-  public function __construct()
-  {
-  }
-
+  /**
+   * @param string $words
+   * @param string $delim
+   *
+   * @return WordCloud
+   */
   public function addWordsByString($words, $delim = ' ')
   {
     $array = explode($delim, $words);
@@ -18,7 +21,13 @@ class WordCloud
     return $this->addWordsByArray($array);
   }
 
-  public function addWordsByArray($array)
+  /**
+   * @param array $array
+   *
+   * @return $this
+   * @throws \Exception
+   */
+  public function addWordsByArray(array $array)
   {
     if(is_assoc($array))
     {
@@ -38,8 +47,21 @@ class WordCloud
     return $this;
   }
 
+  /**
+   * @param string $word
+   * @param array  $data
+   * @param int    $count
+   *
+   * @return $this
+   * @throws \Exception
+   */
   public function addWord($word, array $data = [], $count = 1)
   {
+    if (!$word)
+    {
+      throw new \Exception('You must enter a word.');
+    }
+
     if(isset($this->words[$word]))
     {
       $this->words[$word]['count'] = $this->words[$word]['count'] + $count;
@@ -59,12 +81,21 @@ class WordCloud
     return $this;
   }
 
-  public function getWords($orderBy = 'word', $orderDir = 'asc')
+  /**
+   * @param string $orderBy
+   * @param string $orderDir
+   * @param int    $fontMin
+   * @param int    $fontMax
+   *
+   * @return array
+   */
+  public function getWords($orderBy = 'word', $orderDir = 'asc', $fontMin = 10, $fontMax = 30)
   {
+    $this->_calculateFont($fontMin, $fontMax);
+
     switch($orderBy)
     {
       case 'count':
-        $this->_calculateRange();
         $this->_sortByCount($orderDir);
         break;
       case 'rand':
@@ -77,20 +108,66 @@ class WordCloud
     return $this->words;
   }
 
-  public function render($fontMin, $fontMax, $fontUnits = 'px', $orderBy = 'word', $orderDir = 'asc')
+  /**
+   * @param int $fontMin
+   * @param int $fontMax
+   *
+   * @return $this
+   */
+  private function _calculateFont($fontMin, $fontMax)
   {
-    $fontRange = $fontMax - $fontMin;
-    $words = $this->getWords($orderBy, $orderDir);
-
-    $return = [];
-    foreach($words as $word => $array)
+    $this->_calculatePercentage();
+    $range = $fontMax - $fontMin;
+    foreach($this->words as $word => $array)
     {
-      $font = round($array['count'] / $this->range * $fontRange, 2) + $fontMin;
-      $return[] = new Dom('span', ['style' => 'font-size: '.$font.$fontUnits], [$word]);
+      $this->words[$word]['size'] = ($this->words[$word]['percent'] / 100 * $range) + $fontMin;
     }
-    return implode('', $return);
+    return $this;
   }
 
+  /**
+   * @return $this
+   */
+  private function _calculatePercentage()
+  {
+    $this->_calculateMinMax();
+    foreach($this->words as $word => $array)
+    {
+      $this->words[$word]['percent'] = round(
+        $this->words[$word]['count'] / $this->max * 100,
+        2
+      );
+    }
+
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
+  private function _calculateMinMax()
+  {
+    $min = $max = null;
+    foreach($this->words as $word => $array)
+    {
+      if(!isset($min) || !isset($min))
+      {
+        $min = $max = $array['count'];
+      }
+      $min = min($min, $array['count']);
+      $max = max($max, $array['count']);
+    }
+    $this->min = $min;
+    $this->max = $max;
+
+    return $this;
+  }
+
+  /**
+   * @param string $orderDir
+   *
+   * @return $this
+   */
   private function _sortByWord($orderDir = 'asc')
   {
     $orderDir = $orderDir == 'asc' ? 'ksort' : 'krsort';
@@ -99,6 +176,11 @@ class WordCloud
     return $this;
   }
 
+  /**
+   * @param string $orderDir
+   *
+   * @return $this
+   */
   private function _sortByCount($orderDir = 'desc')
   {
     uasort(
@@ -111,10 +193,11 @@ class WordCloud
         {
           return 0;
         }
-        if ($orderDir == 'asc')
+        if($orderDir == 'asc')
         {
           return ($a < $b) ? -1 : 1;
         }
+
         return ($a > $b) ? -1 : 1;
       }
     );
@@ -122,37 +205,12 @@ class WordCloud
     return $this;
   }
 
+  /**
+   * @return $this
+   */
   private function _sortByRand()
   {
-    shuffle_assoc($this->words);
-
-    return $this;
-  }
-
-  private function _calculateRange()
-  {
-    $count_min = $count_max = null;
-    foreach($this->words as $word => $array)
-    {
-      if(isset($count_max))
-      {
-        $count_max = max($count_max, $array['count']);
-      }
-      else
-      {
-        $count_max = $array['count'];
-      }
-
-      if(isset($count_min))
-      {
-        $count_min = min($count_min, $array['count']);
-      }
-      else
-      {
-        $count_min = $array['count'];
-      }
-    }
-    $this->range = $count_max - $count_min;
+    $this->words = shuffle_assoc($this->words);
 
     return $this;
   }

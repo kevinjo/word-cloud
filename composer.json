@@ -22,8 +22,7 @@
   },
   "require":     {
     "php":                  ">=5.4.0",
-    "packaged/helpers":     "dev-master",
-    "jleagle/html-builder": "dev-master"
+    "packaged/helpers":     "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "4.1.*"
