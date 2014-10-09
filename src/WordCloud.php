@@ -96,8 +96,10 @@ class WordCloud
     switch($orderBy)
     {
       case 'count':
+      case 'size':
         $this->_sortByCount($orderDir);
         break;
+      case 'random':
       case 'rand':
         $this->_sortByRand();
         break;
