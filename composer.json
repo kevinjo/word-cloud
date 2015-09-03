@@ -1,6 +1,6 @@
 {
-  "name":        "jleagle/word-cloud",
-  "keywords":    [
+  "name": "jleagle/word-cloud",
+  "keywords": [
     "word cloud",
     "tag cloud",
     "word",
@@ -8,24 +8,24 @@
     "cloud"
   ],
   "description": "Word cloud generator.",
-  "authors":     [
+  "authors": [
     {
-      "name":     "James Eagle",
-      "email":    "jimeagle@gmail.com",
+      "name": "James Eagle",
+      "email": "jimeagle@gmail.com",
       "homepage": "http://jimeagle.com"
     }
   ],
-  "autoload":    {
+  "autoload": {
     "psr-4": {
       "Jleagle\\": "src"
     }
   },
-  "require":     {
-    "php":                  ">=5.4.0",
-    "packaged/helpers":     "dev-master"
+  "require": {
+    "php": ">=5.4.0",
+    "packaged/helpers": "~1.0"
   },
   "require-dev": {
-    "phpunit/phpunit":        "4.1.*",
-    "satooshi/php-coveralls": "dev-master"
+    "phpunit/phpunit": "~4.8",
+    "satooshi/php-coveralls": "~0.6.1"
   }
 }

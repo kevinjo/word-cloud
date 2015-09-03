@@ -17,10 +17,12 @@ class WordCloudTest extends PHPUnit_Framework_TestCase
     $wc->addWordsByString('w4 w5');
     $this->assertArrayHasKey('w5', $wc->getWords());
 
-    $wc->addWordsByArray([
+    $wc->addWordsByArray(
+      [
         'w6' => [1, 2],
         'w7' => [3, 4],
-    ]);
+      ]
+    );
     $this->assertArrayHasKey('w6', $wc->getWords());
     $this->assertEquals(1, $wc->getWords()['w6']['data'][0]);
     $this->assertEquals(2, $wc->getWords()['w6']['data'][1]);
@@ -46,7 +48,6 @@ class WordCloudTest extends PHPUnit_Framework_TestCase
     reset($words);
     $first = key($words);
     $this->assertEquals('w2', $first);
-
   }
 
   public function testException()
@@ -55,5 +56,4 @@ class WordCloudTest extends PHPUnit_Framework_TestCase
     $wc = new WordCloud();
     $wc->addWord('');
   }
-
 }
