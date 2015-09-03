@@ -1,8 +1,16 @@
 <?php
 namespace Jleagle;
 
+use Packaged\Helpers\Arrays;
+
 class WordCloud
 {
+  const SIZE_NAME = 'name';
+  const SIZE_COUNT = 'count';
+  const SIZE_RANDOM = 'random';
+
+  const ORDER_ASC = 'asc';
+  const ORDER_DESC = 'desc';
 
   private $words = [];
   private $min;
@@ -29,7 +37,7 @@ class WordCloud
    */
   public function addWordsByArray(array $array)
   {
-    if(is_assoc($array))
+    if(Arrays::isAssoc($array))
     {
       foreach($array as $word => $data)
       {
@@ -57,7 +65,7 @@ class WordCloud
    */
   public function addWord($word, array $data = [], $count = 1)
   {
-    if (!$word)
+    if(!$word)
     {
       throw new \Exception('You must enter a word.');
     }
@@ -89,18 +97,19 @@ class WordCloud
    *
    * @return array
    */
-  public function getWords($orderBy = 'word', $orderDir = 'asc', $fontMin = 10, $fontMax = 30)
+  public function getWords(
+    $orderBy = self::SIZE_NAME, $orderDir = self::ORDER_ASC, $fontMin = 10,
+    $fontMax = 30
+  )
   {
     $this->_calculateFont($fontMin, $fontMax);
 
     switch($orderBy)
     {
-      case 'count':
-      case 'size':
+      case self::SIZE_COUNT:
         $this->_sortByCount($orderDir);
         break;
-      case 'random':
-      case 'rand':
+      case self::SIZE_RANDOM:
         $this->_sortByRand();
         break;
       default:
@@ -122,7 +131,7 @@ class WordCloud
     $range = $fontMax - $fontMin;
     foreach($this->words as $word => $array)
     {
-      $this->words[$word]['size'] = ($this->words[$word]['percent'] / 100 * $range) + $fontMin;
+      $this->words[$word]['size'] = floor(($this->words[$word]['percent'] / 100 * $range) + $fontMin);
     }
     return $this;
   }
@@ -212,9 +221,8 @@ class WordCloud
    */
   private function _sortByRand()
   {
-    $this->words = shuffle_assoc($this->words);
+    $this->words = Arrays::shuffleAssoc($this->words);
 
     return $this;
   }
-
 }
